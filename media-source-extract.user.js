@@ -69,12 +69,14 @@
         var s = document.getElementsByTagName("script")[0];
         s.parentNode.insertBefore(hm, s);
       })();
-      _sourceBufferList.forEach((target) => {
+        let filename = prompt("输入文件名称")
+      _sourceBufferList.forEach((target, index) => {
         const mime = target.mime.split(';')[0]
         const type = mime.split('/')[1]
         const fileBlob = new Blob(target.bufferList, { type: mime }) // 创建一个Blob对象，并设置文件的 MIME 类型
         const a = document.createElement('a')
-        a.download = `${document.title}.${type}`
+        const name = index == 0 ? `${filename + "_vedio"}.${type}` : `${filename + "_audio"}.${type}`
+        a.download = name
         a.href = URL.createObjectURL(fileBlob)
         a.style.display = 'none'
         document.body.appendChild(a)
