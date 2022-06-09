@@ -10,9 +10,9 @@
 // @run-at document-start
 // ==/UserScript==
 
-(function() {
+(function () {
   'use strict';
-  (function() {
+  (function () {
     if (document.getElementById('media-source-extract')) {
       return
     }
@@ -63,32 +63,37 @@
     // 下载资源
     function _download() {
       var _hmt = _hmt || [];
-      (function() {
+      (function () {
         var hm = document.createElement("script");
         hm.src = "https://hm.baidu.com/hm.js?1f12b0865d866ae1b93514870d93ce89";
         var s = document.getElementsByTagName("script")[0];
         s.parentNode.insertBefore(hm, s);
       })();
-        let filename = prompt("输入文件名称")
-      _sourceBufferList.forEach((target, index) => {
-        const mime = target.mime.split(';')[0]
-        const type = mime.split('/')[1]
-        const fileBlob = new Blob(target.bufferList, { type: mime }) // 创建一个Blob对象，并设置文件的 MIME 类型
-        const a = document.createElement('a')
-        const name = index == 0 ? `${filename + "_vedio"}.${type}` : `${filename + "_audio"}.${type}`
-        a.download = name
-        a.href = URL.createObjectURL(fileBlob)
-        a.style.display = 'none'
-        document.body.appendChild(a)
-        a.click()
-        a.remove()
-      })
-      _sourceBufferList = []  //这里新增的
+      let filename = prompt("输入文件名称")
+
+      if (filename && filename !== '') {
+        _sourceBufferList.slice(-2).forEach((target, index) => {
+          const mime = target.mime.split(';')[0]
+          const type = mime.split('/')[1]
+          const fileBlob = new Blob(target.bufferList, { type: mime }) // 创建一个Blob对象，并设置文件的 MIME 类型
+          const a = document.createElement('a')
+          // const name = `${filename + "_" + index}.${type}`
+          const name = `${filename + "_" + index}._src`
+          a.download = name
+          a.href = URL.createObjectURL(fileBlob)
+          a.style.display = 'none'
+          document.body.appendChild(a)
+          a.click()
+          a.remove()
+        })
+        _sourceBufferList = []  //这里新增的
+        $btnDownload.style.backgroundColor = "#3498db"
+      }
     }
 
     // 监听资源全部录取成功
     let _endOfStream = window.MediaSource.prototype.endOfStream
-    window.MediaSource.prototype.endOfStream = function() {
+    window.MediaSource.prototype.endOfStream = function () {
       if (!isClose) {
         $btnDownload.style.backgroundColor = "#056b00"
         _endOfStream.call(this)
@@ -97,7 +102,7 @@
 
     // 录取资源
     let _addSourceBuffer = window.MediaSource.prototype.addSourceBuffer
-    window.MediaSource.prototype.addSourceBuffer = function(mime) {
+    window.MediaSource.prototype.addSourceBuffer = function (mime) {
       _appendDom()
       let sourceBuffer = _addSourceBuffer.call(this, mime)
       let _append = sourceBuffer.appendBuffer
@@ -106,7 +111,7 @@
         mime,
         bufferList,
       })
-      sourceBuffer.appendBuffer = function(buffer) {
+      sourceBuffer.appendBuffer = function (buffer) {
         let sumFragment = 0
         _sourceBufferList.forEach(sourceBuffer => sumFragment += sourceBuffer.bufferList.length)
         $downloadNum.innerHTML = `已捕获 ${sumFragment} 个片段`
@@ -155,7 +160,7 @@
       `
       $btnDownload.addEventListener('click', _download)
       $tenRate.addEventListener('click', _tenRatePlay)
-      $closeBtn.addEventListener('click', function() {
+      $closeBtn.addEventListener('click', function () {
         $btnDownload.remove()
         $downloadNum.remove()
         $closeBtn.remove()
