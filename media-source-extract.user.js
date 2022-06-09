@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         media-source-extract
-// @namespace    https://github.com/Momo707577045/media-source-extract
+// @namespace    https://github.com/Hzqi/media-source-extract
 // @version      0.2
-// @description  https://github.com/Momo707577045/media-source-extract 配套插件
+// @description  https://github.com/Hzqi/media-source-extract 配套插件
 // @author       Momo707577045
 // @include      *
 // @exclude      http://blog.luckly-mjw.cn/tool-show/media-source-extract/player/player.html
@@ -88,8 +88,7 @@
     let _endOfStream = window.MediaSource.prototype.endOfStream
     window.MediaSource.prototype.endOfStream = function() {
       if (!isClose) {
-        alert('资源全部捕获成功，即将下载！')
-        _download()
+        $btnDownload.style.backgroundColor = "#056b00"
         _endOfStream.call(this)
       }
     }
